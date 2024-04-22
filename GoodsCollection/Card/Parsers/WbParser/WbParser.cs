@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
@@ -8,11 +9,12 @@ namespace GoodsCollection.Card.Parsers.WbParser;
 public class WbParser : IDisposable
 {
     private const string BaseUri = "https://www.wildberries.ru/catalog/{0}/detail.aspx";
-    private readonly ChromeDriver _driver = new();
+    private readonly RemoteWebDriver _driver;
     private readonly WebDriverWait _wait;
 
     public WbParser()
     {
+        _driver = new RemoteWebDriver(new Uri("http://selenium-hub:4444/wd/hub"), new ChromeOptions());
         _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
     }
 

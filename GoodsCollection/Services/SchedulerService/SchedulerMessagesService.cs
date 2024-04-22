@@ -22,7 +22,7 @@ public class SchedulerMessagesService : BackgroundService
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
             var card = _service.GetNextCard();
-            if (card is not null)
+            if (card is not null && DateTime.UtcNow.Minute == 0)
                 await _telegramService.SendCard(ChannelType.MainChannel, card, stoppingToken);
         }
     }

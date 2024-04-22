@@ -38,6 +38,11 @@ var goodService = app.Services.GetService<ICardService>();
 var cardBuilder = app.Services.GetService<ICardBuilderService>();
 var logService = app.Services.GetService<ITelegramLogService>();
 
+using var scope = app.Services.CreateScope();
+var conn = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+await conn.Database.MigrateAsync();
+
 bot!.Start();
 await goodService!.UploadCards();
 
