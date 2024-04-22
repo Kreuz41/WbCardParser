@@ -1,0 +1,39 @@
+﻿services: 
+  goods:
+    image: goods
+    build:
+      context: ../
+      dockerfile: GoodsCollection/Dockerfile
+    user: root
+    ports:
+      - 5000:8080
+    env_file: .env
+    depends_on: 
+      - postgres
+  
+  postgres:
+    image: postgres:latest
+    env_file: .env
+    volumes:
+      - goods_postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5430:5432
+      
+  selenium-hub:
+    image: selenium/hub:latest
+    ports:
+      - "4444:4444"
+  
+  chrome-node:
+    image: selenium/node-chrome:latest
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    volumes:
+      - /dev/shm:/dev/shm
+        
+volumes: 
+  goods_postgres_data:
