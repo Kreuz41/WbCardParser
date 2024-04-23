@@ -19,9 +19,9 @@ public class CardRepository : ICardRepository
     {
         var transaction = await _context.Database.BeginTransactionAsync();
         var existingGood = await GetByArticle(Convert.ToInt32(card.Article));
-        if (existingGood != null)
+        if (existingGood is not null)
         {
-         return transaction;
+            return transaction;
         }
         await _context.Goods.AddAsync(new GoodModel
         {
