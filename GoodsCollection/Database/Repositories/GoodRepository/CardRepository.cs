@@ -18,6 +18,11 @@ public class CardRepository : ICardRepository
     public async Task<IDbContextTransaction> Create(GoodCard card, long createdBy)
     {
         var transaction = await _context.Database.BeginTransactionAsync();
+        var existingGood = await GetByArticle(Convert.ToInt32(card.Article));
+        if (existingGood != null)
+        {
+         return transaction;
+        }
         await _context.Goods.AddAsync(new GoodModel
         {
             Article = Convert.ToInt32(card.Article),
