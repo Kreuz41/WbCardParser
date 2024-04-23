@@ -33,7 +33,8 @@ public class TelegramService : ITelegramService
     {
         _client.StartReceiving(UpdateHandler, PoolingErrorHandler, new ReceiverOptions
         {
-            AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery]
+            AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery],
+            ThrowPendingUpdates = false
         });
     }
 
