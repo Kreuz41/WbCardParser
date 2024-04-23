@@ -1,12 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodsCollection", "GoodsCollection\GoodsCollection.csproj", "{89A47552-9F1A-4C3B-9460-0FEE852FB69F}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoodsCollection", "GoodsCollection\GoodsCollection.csproj", "{89A47552-9F1A-4C3B-9460-0FEE852FB69F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildConf", "BuildConf", "{84200426-49DB-4ACE-8C92-7030A5B574BF}"
 	ProjectSection(SolutionItems) = preProject
-		BuildConf\docker-compose.yaml = BuildConf\docker-compose.yaml
-		BuildConf\.env = BuildConf\.env
+		.env = .env
 		BuildConf\.env.sample = BuildConf\.env.sample
+		BuildConf\docker-compose.yaml = BuildConf\docker-compose.yaml
 	EndProjectSection
 EndProject
 Global
@@ -19,5 +22,11 @@ Global
 		{89A47552-9F1A-4C3B-9460-0FEE852FB69F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89A47552-9F1A-4C3B-9460-0FEE852FB69F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89A47552-9F1A-4C3B-9460-0FEE852FB69F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E3A2164-24AC-4577-88CF-D66B7A7774E6}
 	EndGlobalSection
 EndGlobal
