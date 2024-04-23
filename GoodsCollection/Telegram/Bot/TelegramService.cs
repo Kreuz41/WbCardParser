@@ -48,7 +48,8 @@ public class TelegramService : ITelegramService
             
             await _client.DeleteMessageAsync(update.CallbackQuery.Message!.Chat.Id, 
                 update.CallbackQuery.Message.MessageId, cancellationToken: token);
-            await _client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, $"{data[1]}", 
+            await _client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id,  
+                data[1] == CardStatus.Confirmed.ToString() ? $"{data[1]}\u2705" : $"{data[1]}\u274c", 
                 cancellationToken: token);
             
             OnStatusChanged(Convert.ToInt32(data[0]), Enum.Parse<CardStatus>(data[1]));
@@ -91,6 +92,8 @@ public class TelegramService : ITelegramService
 
     public async Task ApplyCard(long chatId, GoodCard card, CancellationToken token = default)
     {
+        await PublishCard(card, token, chatId);
+        
         var replies = new InlineKeyboardMarkup(new[]
         {
             new[]
@@ -99,7 +102,7 @@ public class TelegramService : ITelegramService
                 InlineKeyboardButton.WithCallbackData("Reject", $"{card.Article} {CardStatus.Rejected}")
             }
         });
-        await _client.SendTextMessageAsync(chatId, GetMessageText(card) + "\n\nConfirm or reject", 
+        await _client.SendTextMessageAsync(chatId, "Confirm or reject", 
             replyMarkup: replies, cancellationToken: token);
     }
 
@@ -108,7 +111,7 @@ public class TelegramService : ITelegramService
         await _client.SendTextMessageAsync(chatId, message, cancellationToken: token);
     }
 
-    public async Task PublishCard(GoodCard card, CancellationToken token = default)
+    public async Task PublishCard(GoodCard card, CancellationToken token = default, long chatId = 0)
     {
         var inputMedia = new List<InputMediaPhoto>();
         foreach (var image in card.Images!)
@@ -123,7 +126,10 @@ public class TelegramService : ITelegramService
             if (inputMedia.Count == 9) break;
         }
 
-        var media = await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
+        if(chatId == 0)
+            await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
+        else
+            await _client.SendMediaGroupAsync(chatId, inputMedia, cancellationToken: token);
     }
 
     private string GetMessageText(GoodCard card)

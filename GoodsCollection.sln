@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoodsCollection", "GoodsCol
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildConf", "BuildConf", "{84200426-49DB-4ACE-8C92-7030A5B574BF}"
 	ProjectSection(SolutionItems) = preProject
-		.env = .env
+		BuildConf\.env = BuildConf\.env
 		BuildConf\.env.sample = BuildConf\.env.sample
 		BuildConf\docker-compose.yaml = BuildConf\docker-compose.yaml
 	EndProjectSection
