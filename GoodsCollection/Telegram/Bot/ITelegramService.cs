@@ -11,6 +11,6 @@ public interface ITelegramService
     void Start();
     Task LogAction(string message, CancellationToken token = default);
     Task ApplyCard(long chatId, GoodCard card, CancellationToken token = default);
-    Task SendCard(long chatId, GoodCard card, CancellationToken token = default);
+    Task PublishCard(GoodCard card, CancellationToken token = default);
     Task SendMessage(long chatId, string message, CancellationToken token = default);
 }

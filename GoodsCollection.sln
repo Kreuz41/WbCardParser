@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoodsCollection", "GoodsCollection\GoodsCollection.csproj", "{89A47552-9F1A-4C3B-9460-0FEE852FB69F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{84200426-49DB-4ACE-8C92-7030A5B574BF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildConf", "BuildConf", "{84200426-49DB-4ACE-8C92-7030A5B574BF}"
 	ProjectSection(SolutionItems) = preProject
-		Build\docker-compose.yaml = Build\docker-compose.yaml
-		Build\.env = Build\.env
-		Build\.env.sample = Build\.env.sample
+		BuildConf\docker-compose.yaml = BuildConf\docker-compose.yaml
+		BuildConf\.env = BuildConf\.env
+		BuildConf\.env.sample = BuildConf\.env.sample
 	EndProjectSection
 EndProject
 Global

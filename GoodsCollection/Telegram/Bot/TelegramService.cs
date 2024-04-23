@@ -12,10 +12,16 @@ namespace GoodsCollection.Telegram.Bot;
 public class TelegramService : ITelegramService
 {
     private readonly TelegramBotClient _client;
+    private readonly ChannelType _channelType;
 
     public TelegramService(BotSettings settings)
     {
         _client = new TelegramBotClient(settings.Token);
+        _channelType = new ChannelType
+        {
+            MainChannel = settings.MainChannel,
+            LogChannel = settings.LogChannel
+        };
     }
 
     public event Action<int, long>? ArticleReceived;  
@@ -78,14 +84,12 @@ public class TelegramService : ITelegramService
 
     public async Task LogAction(string message, CancellationToken token = default)
     {
-        await _client.SendTextMessageAsync(ChannelType.LogChannel, GetLogMessage(message), cancellationToken: token);
+        await _client.SendTextMessageAsync(_channelType.LogChannel, GetLogMessage(message), cancellationToken: token);
     }
     
 
     public async Task ApplyCard(long chatId, GoodCard card, CancellationToken token = default)
     {
-        await SendCard(chatId, card, token);
-        
         var replies = new InlineKeyboardMarkup(new[]
         {
             new[]
@@ -94,7 +98,7 @@ public class TelegramService : ITelegramService
                 InlineKeyboardButton.WithCallbackData("Reject", $"{card.Article} {CardStatus.Rejected}")
             }
         });
-        await _client.SendTextMessageAsync(chatId, $"Card with article {card.Article}\n\nConfirm or reject", 
+        await _client.SendTextMessageAsync(chatId, GetMessageText(card) + "\n\nConfirm or reject", 
             replyMarkup: replies, cancellationToken: token);
     }
 
@@ -103,7 +107,7 @@ public class TelegramService : ITelegramService
         await _client.SendTextMessageAsync(chatId, message, cancellationToken: token);
     }
 
-    public async Task SendCard(long chatId, GoodCard card, CancellationToken token = default)
+    public async Task PublishCard(GoodCard card, CancellationToken token = default)
     {
         var inputMedia = new List<InputMediaPhoto>();
         foreach (var image in card.Images!)
@@ -118,7 +122,7 @@ public class TelegramService : ITelegramService
             if (inputMedia.Count == 9) break;
         }
 
-        var media = await _client.SendMediaGroupAsync(chatId, inputMedia, cancellationToken: token);
+        var media = await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
     }
 
     private string GetMessageText(GoodCard card)
