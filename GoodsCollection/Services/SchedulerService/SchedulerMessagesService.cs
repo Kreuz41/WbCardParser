@@ -21,7 +21,7 @@ public class SchedulerMessagesService : BackgroundService
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            // if (DateTime.UtcNow.Minute != 0) continue;
+            if (DateTime.UtcNow.Minute != 0) continue;
             
             var card = _service.GetNextCard();
             if(card is not null)
