@@ -27,7 +27,7 @@ public class TelegramService : ITelegramService
     public event Action<int, long>? ArticleReceived;  
     public event Action<int, CardStatus>? StatusChanged;
 
-    private readonly List<long> _whiteList = [1113106194, 1410785002];
+    private readonly List<long> _whiteList = [1113106194, 1057428180, 1410785002];
 
     public void Start()
     {
