@@ -1,5 +1,6 @@
 ﻿using GoodsCollection.Enums;
 using GoodsCollection.Telegram.Bot;
+using GoodsCollection.Telegram.Bot.TelegramService;
 
 namespace GoodsCollection.Services.TelegramLogService;
 

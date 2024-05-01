@@ -1,7 +1,7 @@
 ﻿using GoodsCollection.Card.Builders.Model;
 using GoodsCollection.Enums;
 
-namespace GoodsCollection.Telegram.Bot;
+namespace GoodsCollection.Telegram.Bot.TelegramService;
 
 public interface ITelegramService
 {

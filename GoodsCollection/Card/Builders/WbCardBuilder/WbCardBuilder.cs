@@ -13,10 +13,9 @@ public class WbCardBuilder
         var card = new GoodCard
         {
             Name = wbParser.GetName(),
-            Images = wbParser.GetImages(),
             Article = wbParser.GetArticle(),
             Rate = wbParser.GetRate(),
-            Price = "",
+            Price = "wbParser.GetPrice()",
             RatesCount = wbParser.GetRatesCount(),
             Brand = wbParser.GetBrand(),
         };
@@ -30,6 +29,8 @@ public class WbCardBuilder
             return null;
 
         card.Description = string.Join('.', sentence[..2].ToList()) + ".";
+
+        card.Images = wbParser.GetImages();
 
         return card;
     } 

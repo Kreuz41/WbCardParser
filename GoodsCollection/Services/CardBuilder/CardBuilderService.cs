@@ -1,6 +1,7 @@
 ﻿using GoodsCollection.Card.Builders.WbCardBuilder;
 using GoodsCollection.Services.GoodService;
 using GoodsCollection.Telegram.Bot;
+using GoodsCollection.Telegram.Bot.TelegramService;
 
 namespace GoodsCollection.Services.CardBuilder;
 
