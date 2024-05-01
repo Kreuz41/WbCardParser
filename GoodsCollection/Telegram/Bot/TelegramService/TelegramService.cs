@@ -90,8 +90,7 @@ public class TelegramService : ITelegramService
                 if(text.StartsWith('/'))
                     _commandHandler.HandleCommand(text, new SlashCommandContext
                     {
-                        ChatId = chatId,
-                        Data = text.Split(' ')[1]
+                        ChatId = chatId
                     });
                 else
                     await TextInputHandle(chatId, text, token);
