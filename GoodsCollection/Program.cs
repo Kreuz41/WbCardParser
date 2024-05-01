@@ -6,6 +6,8 @@ using GoodsCollection.Services.GoodService;
 using GoodsCollection.Services.SchedulerService;
 using GoodsCollection.Services.TelegramLogService;
 using GoodsCollection.Telegram.Bot;
+using GoodsCollection.Telegram.Bot.Input.Commands.CommandHandler;
+using GoodsCollection.Telegram.Bot.TelegramService;
 using GoodsCollection.Telegram.Settings;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +27,7 @@ builder.Services.AddSingleton<ICardService, CardService>();
 builder.Services.AddSingleton<ICardService, CardService>();
 builder.Services.AddSingleton<ICardBuilderService, CardBuilderService>();
 builder.Services.AddSingleton<ITelegramLogService, TelegramLogService>();
+builder.Services.AddSingleton<ISlashCommandHandler, SlashCommandHandler>();
 
 builder.Services.AddSingleton<IImageRepository, ImageRepository>();
 builder.Services.AddSingleton<ICardRepository, CardRepository>();
@@ -37,6 +40,7 @@ var bot = app.Services.GetService<ITelegramService>();
 var goodService = app.Services.GetService<ICardService>();
 var cardBuilder = app.Services.GetService<ICardBuilderService>();
 var logService = app.Services.GetService<ITelegramLogService>();
+var commandHandler = app.Services.GetService<ISlashCommandHandler>();
 
 using var scope = app.Services.CreateScope();
 var conn = scope.ServiceProvider.GetRequiredService<AppDbContext>();

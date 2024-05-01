@@ -1,5 +1,6 @@
 ﻿using GoodsCollection.Services.GoodService;
 using GoodsCollection.Telegram.Bot;
+using GoodsCollection.Telegram.Bot.TelegramService;
 using GoodsCollection.Telegram.Settings;
 
 namespace GoodsCollection.Services.SchedulerService;

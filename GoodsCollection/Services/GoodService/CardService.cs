@@ -30,6 +30,11 @@ public class CardService : ICardService
         OnCardSaved(card.Article.Value, createdBy);
     }
 
+    public int GetQueueLength()
+    {
+        return _cards.Count;
+    }
+
     public async void ChangeCardStatus(int article, CardStatus status)
     {
         await _cardRepository.ChangeStatus(article, (int)status);

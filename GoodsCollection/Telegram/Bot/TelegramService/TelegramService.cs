@@ -1,5 +1,8 @@
 ﻿using GoodsCollection.Card.Builders.Model;
 using GoodsCollection.Enums;
+using GoodsCollection.Services.GoodService;
+using GoodsCollection.Telegram.Bot.Input.Commands.CommandContext;
+using GoodsCollection.Telegram.Bot.Input.Commands.CommandHandler;
 using GoodsCollection.Telegram.Settings;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -7,15 +10,19 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace GoodsCollection.Telegram.Bot;
+namespace GoodsCollection.Telegram.Bot.TelegramService;
 
 public class TelegramService : ITelegramService
 {
     private readonly TelegramBotClient _client;
     private readonly ChannelType _channelType;
+    private readonly ISlashCommandHandler _commandHandler;
+    private readonly ICardService _cardService;
 
-    public TelegramService(BotSettings settings)
+    public TelegramService(BotSettings settings, ISlashCommandHandler commandHandler, ICardService cardService)
     {
+        _commandHandler = commandHandler;
+        _cardService = cardService;
         _client = new TelegramBotClient(settings.Token);
         _channelType = new ChannelType
         {
@@ -36,10 +43,61 @@ public class TelegramService : ITelegramService
             AllowedUpdates = [UpdateType.Message, UpdateType.CallbackQuery],
             ThrowPendingUpdates = true
         });
+        
+        AddCommands();
+    }
+
+    public void AddCommands(CancellationToken token = default)
+    {
+        _commandHandler.RegisterCommand(async context =>
+        {
+            var msg = await _client.SendTextMessageAsync(context.ChatId, GetHelloMessage(), 
+                cancellationToken: token, parseMode: ParseMode.Markdown);
+            await _client.PinChatMessageAsync(context.ChatId, msg.MessageId, cancellationToken: token);
+        }).AddFilter(command => command == "/start");
+
+        _commandHandler.RegisterCommand(async context =>
+        {
+            var isSuccess = int.TryParse(context.Data, out var article);
+            if (!isSuccess)
+            {
+                await _client.SendTextMessageAsync(context.ChatId, "Incorrect article", cancellationToken: token);
+                return;
+            }
+
+            await _client.SendTextMessageAsync(context.ChatId, "Wait for response", cancellationToken: token);
+            OnArticleReceived(article, context.ChatId);
+        }).AddFilter(command => command.StartsWith("/card"));
+        
+        _commandHandler.RegisterCommand(async context =>
+        {
+            var length = _cardService.GetQueueLength();
+            
+            await _client.SendTextMessageAsync(context.ChatId, 
+                $"Now in queue: {length}\nIt's {length / 18} days {length % 18} hours", 
+                cancellationToken: token);
+        }).AddFilter(command => command == "/queue");
     }
 
     private async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken token)
     {
+        var chatId = update.Message?.Chat.Id ?? update.CallbackQuery!.Message!.Chat.Id;
+        if (update.Type == UpdateType.Message)
+        {
+            var text = update.Message!.Text;
+            if (text is not null)
+            {
+                if(text.StartsWith('/'))
+                    _commandHandler.HandleCommand(text, new SlashCommandContext
+                    {
+                        ChatId = chatId,
+                        Data = text.Split(' ')[1]
+                    });
+                else
+                    await TextInputHandle(chatId, text, token);
+            }
+        }
+        
         if (update.CallbackQuery is not null)
         {
             var callbackData = update.CallbackQuery.Data!;
@@ -53,22 +111,12 @@ public class TelegramService : ITelegramService
                 cancellationToken: token);
             
             OnStatusChanged(Convert.ToInt32(data[0]), Enum.Parse<CardStatus>(data[1]));
-            return;
         }
+    }
 
-        var chatId = update.Message!.Chat.Id;
-        if (!_whiteList.Contains(chatId))
-            return;
-
-        if (update.Message.Text == "/start")
-        {
-            var msg = await _client.SendTextMessageAsync(chatId, GetHelloMessage(), 
-                cancellationToken: token, parseMode: ParseMode.Markdown);
-            await _client.PinChatMessageAsync(chatId, msg.MessageId, cancellationToken: token);
-            return;
-        }
-            
-        var isSuccess = int.TryParse(update.Message.Text, out var article);
+    private async Task TextInputHandle(long chatId, string text, CancellationToken token)
+    {
+        var isSuccess = int.TryParse(text, out var article);
         if (!isSuccess)
         {
             await _client.SendTextMessageAsync(chatId, "Incorrect article", cancellationToken: token);

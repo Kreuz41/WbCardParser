@@ -9,12 +9,12 @@ namespace GoodsCollection.Card.Parsers.WbParser;
 public class WbParser : IDisposable
 {
     private const string BaseUri = "https://www.wildberries.ru/catalog/{0}/detail.aspx";
-    private readonly RemoteWebDriver _driver;
+    private readonly ChromeDriver _driver = new();
     private readonly WebDriverWait _wait;
 
     public WbParser()
     {
-        _driver = new RemoteWebDriver(new Uri("http://selenium-hub:4444/wd/hub"), new ChromeOptions());
+        //_driver = new RemoteWebDriver(new Uri("http://selenium-hub:4444/wd/hub"), new ChromeOptions());
         _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
     }
 
@@ -70,11 +70,20 @@ public class WbParser : IDisposable
         try
         {
             var element = 
-                _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".swiper-wrapper")));
+                _wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".zoom-image-container")));
+            element.Click();
+            element = _wait.Until(
+                ExpectedConditions.ElementIsVisible(
+                By.CssSelector(".popup.j-feedbacks-popup.popup-full-gallery.shown.goods-photo")));
             var images = element.FindElements(By.TagName("img"));
-
+            
             List<string> list = [];
-            list.AddRange(images.Select(image => image.GetAttribute("src")));
+            foreach (var webElement in images)
+            {
+                var img = webElement.GetAttribute("src");
+                if (img is not null)
+                    list.Add(img);
+            }
 
             return list;
         }
@@ -98,8 +107,15 @@ public class WbParser : IDisposable
                 _wait.Until(
                     ExpectedConditions.ElementIsVisible(
                         By.CssSelector(".option__text")));
+
+            var text = element.Text;
+
+            element = _wait.Until(
+                ExpectedConditions.ElementIsVisible(
+                    By.CssSelector(".j-close.popup__close.close")));
+            element.Click();
             
-            return element.Text;
+            return text;
         }
         catch (Exception e)
         {
@@ -132,7 +148,9 @@ public class WbParser : IDisposable
         {
             var element = 
                 _wait.Until(
-                    ExpectedConditions.ElementIsVisible(By.CssSelector(".price-block__price-group")));
+                    ExpectedConditions.ElementIsVisible(By.CssSelector(".price-block__wallet-price")));
+
+            // element = element.FindElement(By.TagName("ins"));
             
             return element.Text;
         }
