@@ -9,5 +9,6 @@ public class GoodCard
     public int? Article { get; set; }
     public string? Brand { get; set; }
     public string? Price { get; set; }
+    public string? OldPrice { get; set; }
     public IEnumerable<string>? Images { get; set; } = [];
 }

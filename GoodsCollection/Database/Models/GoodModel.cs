@@ -9,6 +9,7 @@ public class GoodModel
     public string? RatesCount { get; set; }
     public string? Brand { get; set; }
     public string? Price { get; set; }
+    public string? OldPrice { get; set; }
     public long CreatedBy { get; set; }
     public int Status { get; set; }
     public ICollection<ImageModel> Images { get; set; } = new List<ImageModel>();

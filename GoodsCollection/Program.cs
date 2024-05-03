@@ -1,3 +1,6 @@
+using GoodsCollection.Card.Builders.WbCardBuilder;
+using GoodsCollection.Card.Drivers;
+using GoodsCollection.Card.Parsers.WbParser;
 using GoodsCollection.Database;
 using GoodsCollection.Database.Repositories.GoodRepository;
 using GoodsCollection.Database.Repositories.ImageRepository;
@@ -29,6 +32,13 @@ builder.Services.AddSingleton<ICardBuilderService, CardBuilderService>();
 builder.Services.AddSingleton<ITelegramLogService, TelegramLogService>();
 builder.Services.AddSingleton<ISlashCommandHandler, SlashCommandHandler>();
 
+if (builder.Environment.EnvironmentName == Environments.Development)
+    builder.Services.AddSingleton<IDriver, LocalDriver>();
+else
+    builder.Services.AddSingleton<IDriver, RemoteDriver>();
+
+builder.Services.AddSingleton<WbCardBuilder>();
+
 builder.Services.AddSingleton<IImageRepository, ImageRepository>();
 builder.Services.AddSingleton<ICardRepository, CardRepository>();
 
@@ -40,7 +50,6 @@ var bot = app.Services.GetService<ITelegramService>();
 var goodService = app.Services.GetService<ICardService>();
 var cardBuilder = app.Services.GetService<ICardBuilderService>();
 var logService = app.Services.GetService<ITelegramLogService>();
-var commandHandler = app.Services.GetService<ISlashCommandHandler>();
 
 using var scope = app.Services.CreateScope();
 var conn = scope.ServiceProvider.GetRequiredService<AppDbContext>();

@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using GoodsCollection.Card.Drivers;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
@@ -9,12 +10,12 @@ namespace GoodsCollection.Card.Parsers.WbParser;
 public class WbParser : IDisposable
 {
     private const string BaseUri = "https://www.wildberries.ru/catalog/{0}/detail.aspx";
-    private readonly RemoteWebDriver _driver;
+    private readonly WebDriver _driver;
     private readonly WebDriverWait _wait;
 
-    public WbParser()
+    public WbParser(WebDriver driver)
     {
-        _driver = new RemoteWebDriver(new Uri("http://selenium-hub:4444/wd/hub"), new ChromeOptions());
+        _driver = driver;
         _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
     }
 
@@ -142,22 +143,23 @@ public class WbParser : IDisposable
         }
     }
     
-    public string? GetPrice()
+    public (string?, string?) GetPrice()
     {
         try
         {
             var element = 
                 _wait.Until(
-                    ExpectedConditions.ElementIsVisible(By.CssSelector(".price-block__wallet-price")));
+                    ExpectedConditions.ElementIsVisible(By.CssSelector(".product-page__aside-sticky")));
 
-            // element = element.FindElement(By.TagName("ins"));
+            var curPrise = element.FindElement(By.TagName("ins"));
+            var oldPrise = element.FindElement(By.TagName("del"));
             
-            return element.Text;
+            return (curPrise.Text, oldPrise.Text);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return null;
+            return (null, null);
         }
     }
 

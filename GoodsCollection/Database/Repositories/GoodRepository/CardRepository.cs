@@ -33,7 +33,8 @@ public class CardRepository : ICardRepository
             Rate = card.Rate,
             RatesCount = card.RatesCount,
             Status = (int)CardStatus.Waiting,
-            CreatedBy = createdBy
+            CreatedBy = createdBy,
+            OldPrice = card.OldPrice
         });
 
         await _context.SaveChangesAsync();

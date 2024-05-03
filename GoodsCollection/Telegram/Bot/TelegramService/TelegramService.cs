@@ -55,19 +55,6 @@ public class TelegramService : ITelegramService
                 cancellationToken: token, parseMode: ParseMode.Markdown);
             await _client.PinChatMessageAsync(context.ChatId, msg.MessageId, cancellationToken: token);
         }).AddFilter(command => command == "/start");
-
-        _commandHandler.RegisterCommand(async context =>
-        {
-            var isSuccess = int.TryParse(context.Data, out var article);
-            if (!isSuccess)
-            {
-                await _client.SendTextMessageAsync(context.ChatId, "Incorrect article", cancellationToken: token);
-                return;
-            }
-
-            await _client.SendTextMessageAsync(context.ChatId, "Wait for response", cancellationToken: token);
-            OnArticleReceived(article, context.ChatId);
-        }).AddFilter(command => command.StartsWith("/card"));
         
         _commandHandler.RegisterCommand(async context =>
         {
@@ -167,7 +154,7 @@ public class TelegramService : ITelegramService
             if (inputMedia.Count == 1)
             {
                 inputMedia[0].Caption = GetMessageText(card);
-                inputMedia[0].ParseMode = ParseMode.Markdown;
+                inputMedia[0].ParseMode = ParseMode.MarkdownV2;
             }
 
             if (inputMedia.Count == 9) break;
@@ -181,18 +168,49 @@ public class TelegramService : ITelegramService
 
     private string GetMessageText(GoodCard card)
     {
-        return $"""
+        card.Name = PrepareTextForMd(card.Name!);
+        card.Description = PrepareTextForMd(card.Description!);
+        card.Brand = PrepareTextForMd(card.Brand!);
+        card.Rate = PrepareTextForMd(card.Rate!);
+        
+        var text = $"""
                   *{card.Name}*
                          
                   {card.Description}
                          
                   Артикул: `{card.Article}`
                   Бренд: `{card.Brand}`
-                  Рейтинг: {card.Rate}⭐  _({card.RatesCount})_
+                  Рейтинг: {card.Rate}⭐  _\({card.RatesCount}\)_
+                  
+                  "Цена: _{card.Price}_  _\(~{card.OldPrice}~\)_"
 
                   Ссылка: 
-                  https://www.wildberries.ru/catalog/{card.Article}/detail.aspx
+                  https://www\.wildberries\.ru/catalog/{card.Article}/detail\.aspx
                   """;
+
+        
+        return text;
+    }
+
+    private string PrepareTextForMd(string text)
+    {
+        text = text.Replace(@"\", @"\\");
+        text = text.Replace("`", @"\`");
+        text = text.Replace("*", @"\*");
+        text = text.Replace("_", @"\_");
+        text = text.Replace("{", @"\{");
+        text = text.Replace("}", @"\}");
+        text = text.Replace("[", @"\[");
+        text = text.Replace("]", @"\]");
+        text = text.Replace("(", @"\(");
+        text = text.Replace(")", @"\)");
+        text = text.Replace("#", @"\#");
+        text = text.Replace("+", @"\+");
+        text = text.Replace("-", @"\-");
+        text = text.Replace(".", @"\.");
+        text = text.Replace("!", @"\!");
+
+        return text;
     }
 
     private string GetHelloMessage()
