@@ -160,10 +160,18 @@ public class TelegramService : ITelegramService
             if (inputMedia.Count == 9) break;
         }
 
-        if(chatId == 0)
-            await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
-        else
-            await _client.SendMediaGroupAsync(chatId, inputMedia, cancellationToken: token);
+        try
+        {
+            if(chatId == 0)
+                await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
+            else
+                await _client.SendMediaGroupAsync(chatId, inputMedia, cancellationToken: token);
+        }
+        catch (Exception e)
+        {
+            await LogAction(e.Message, token);
+            OnStatusChanged(card.Article!.Value, CardStatus.Rejected);
+        }
     }
 
     private string GetMessageText(GoodCard card)
@@ -182,7 +190,7 @@ public class TelegramService : ITelegramService
                   Бренд: `{card.Brand}`
                   Рейтинг: {card.Rate}⭐  _\({card.RatesCount}\)_
                   
-                  "Цена: _{card.Price}_  _\(~{card.OldPrice}~\)_"
+                  Цена: _{card.Price}_  _\(~{card.OldPrice}~\)_
 
                   Ссылка: 
                   https://www\.wildberries\.ru/catalog/{card.Article}/detail\.aspx
