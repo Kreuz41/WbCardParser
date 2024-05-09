@@ -147,21 +147,21 @@ public class TelegramService : ITelegramService
 
     public async Task PublishCard(GoodCard card, CancellationToken token = default, long chatId = 0)
     {
-        var inputMedia = new List<InputMediaPhoto>();
-        foreach (var image in card.Images!)
-        {
-            inputMedia.Add(new InputMediaPhoto(new InputFileUrl(image)));
-            if (inputMedia.Count == 1)
-            {
-                inputMedia[0].Caption = GetMessageText(card);
-                inputMedia[0].ParseMode = ParseMode.MarkdownV2;
-            }
-
-            if (inputMedia.Count == 9) break;
-        }
-
         try
         {
+            var inputMedia = new List<InputMediaPhoto>();
+            foreach (var image in card.Images!)
+            {
+                inputMedia.Add(new InputMediaPhoto(new InputFileUrl(image)));
+                if (inputMedia.Count == 1)
+                {
+                    inputMedia[0].Caption = GetMessageText(card);
+                    inputMedia[0].ParseMode = ParseMode.MarkdownV2;
+                }
+
+                if (inputMedia.Count == 9) break;
+            }
+        
             if(chatId == 0)
                 await _client.SendMediaGroupAsync(_channelType.MainChannel, inputMedia, cancellationToken: token);
             else
@@ -190,7 +190,7 @@ public class TelegramService : ITelegramService
                   Бренд: `{card.Brand}`
                   Рейтинг: {card.Rate}⭐  _\({card.RatesCount}\)_
                   
-                  Цена: _{card.Price}_  _\(~{card.OldPrice}~\)_
+                  Цена: _{card.Price}_  _\(~{card.OldPrice ?? "Нет старой цены"}~\)_
 
                   Ссылка: 
                   https://www\.wildberries\.ru/catalog/{card.Article}/detail\.aspx
