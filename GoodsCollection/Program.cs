@@ -1,6 +1,5 @@
 using GoodsCollection.Card.Builders.WbCardBuilder;
 using GoodsCollection.Card.Drivers;
-using GoodsCollection.Card.Parsers.WbParser;
 using GoodsCollection.Database;
 using GoodsCollection.Database.Repositories.GoodRepository;
 using GoodsCollection.Database.Repositories.ImageRepository;
@@ -8,7 +7,6 @@ using GoodsCollection.Services.CardBuilder;
 using GoodsCollection.Services.GoodService;
 using GoodsCollection.Services.SchedulerService;
 using GoodsCollection.Services.TelegramLogService;
-using GoodsCollection.Telegram.Bot;
 using GoodsCollection.Telegram.Bot.Input.Commands.CommandHandler;
 using GoodsCollection.Telegram.Bot.TelegramService;
 using GoodsCollection.Telegram.Settings;

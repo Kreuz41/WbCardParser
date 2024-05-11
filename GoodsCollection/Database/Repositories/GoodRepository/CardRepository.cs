@@ -54,7 +54,8 @@ public class CardRepository : ICardRepository
             Name = card.Name,
             Description = card.Description,
             Images = card.Images.Select(i => i.Path),
-            Price = card.Price
+            Price = card.Price,
+            OldPrice = card.OldPrice
         };
     }
 
